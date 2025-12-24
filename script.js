@@ -22,6 +22,8 @@ let startX = 0;
 let currentX = 0;
 let dragging = false;
 let activeCard = null;
+let isSummary = false;
+
 
 /* =========================
    INIT
@@ -31,6 +33,9 @@ init();
 function init() {
   cards = [];
   liked = [];
+  isSummary = false;
+
+  document.body.style.overflow = ""; // 🔓 allow normal scroll reset
 
   for (let i = 0; i < TOTAL; i++) {
     cards.push(`https://cataas.com/cat?random=${Date.now() + i}`);
@@ -42,6 +47,7 @@ function init() {
   render();
   updateProgress();
 }
+
 
 /* =========================
    RENDER
@@ -85,6 +91,8 @@ function updateProgress() {
    DRAG START
    ========================= */
 function start(e) {
+  if (isSummary) return; // 🔥 disable swipe on summary
+
   const target = e.target.closest(".card");
   if (!target || target !== topCard()) return;
 
@@ -99,6 +107,7 @@ function start(e) {
   currentX = startX;
   activeCard.style.transition = "none";
 }
+
 
 /* =========================
    DRAG MOVE
@@ -179,6 +188,10 @@ function swipe(direction) {
    SUMMARY
    ========================= */
 function showSummary() {
+  isSummary = true;
+
+  document.body.style.overflowY = "auto"; // 🔓 enable scrolling
+
   container.innerHTML = `
     <div class="summary">
       <h2>😻 You liked ${liked.length} cats!</h2>
@@ -193,6 +206,7 @@ function showSummary() {
     restartBtn.style.opacity = "1";
   });
 }
+
 
 /* =========================
    EVENTS

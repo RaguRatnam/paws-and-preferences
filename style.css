@@ -152,4 +152,7 @@ main {
 #restart:active {
   transform: translateX(-50%) scale(0.96);
 }
+.summary {
+  padding-bottom: 120px; /* space for floating restart button */
+}
 
