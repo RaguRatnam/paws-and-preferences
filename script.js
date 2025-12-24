@@ -106,6 +106,8 @@ function start(e) {
 function move(e) {
   if (!dragging || !activeCard) return;
 
+  if (e.type === "touchmove") e.preventDefault(); // 🔥 stop scroll
+
   currentX = e.type === "mousemove"
     ? e.clientX
     : e.touches[0].clientX;
@@ -113,7 +115,7 @@ function move(e) {
   const dx = currentX - startX;
 
   activeCard.style.transform =
-    `translateX(${dx}px) rotate(${dx * 0.05}deg)`;
+    `translateX(${dx}px) rotate(${dx * 0.07}deg)`;
 }
 
 function end() {
@@ -121,11 +123,12 @@ function end() {
 
   dragging = false;
   const dx = currentX - startX;
+  const threshold = window.innerWidth * 0.25; // 🔥 mobile-friendly
 
   activeCard.style.transition = "transform 0.3s ease";
 
-  if (dx > 120) swipe(1);
-  else if (dx < -120) swipe(-1);
+  if (dx > threshold) swipe(1);
+  else if (dx < -threshold) swipe(-1);
   else activeCard.style.transform = "translateX(0) rotate(0)";
 }
 
@@ -175,15 +178,15 @@ function showSummary() {
 restartBtn.addEventListener("click", init);
 
 /* =========================
-   EVENTS
+   EVENTS (IMPORTANT CHANGE)
    ========================= */
+container.addEventListener("touchstart", start, { passive: false });
+container.addEventListener("touchmove", move, { passive: false });
+container.addEventListener("touchend", end);
+
 document.addEventListener("mousedown", start);
 document.addEventListener("mousemove", move);
 document.addEventListener("mouseup", end);
-
-document.addEventListener("touchstart", start, { passive: true });
-document.addEventListener("touchmove", move, { passive: true });
-document.addEventListener("touchend", end);
 
 /* =========================
    BUTTONS

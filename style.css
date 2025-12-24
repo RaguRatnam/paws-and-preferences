@@ -17,6 +17,7 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
+  overscroll-behavior: none; /* 🔥 prevent bounce */
 }
 
 header {
@@ -28,9 +29,11 @@ header h1 {
   font-size: 1.8rem;
 }
 
-header p {
+header p,
+.hint {
   color: #555;
   margin-top: 4px;
+  font-size: 0.9rem;
 }
 
 main {
@@ -52,12 +55,15 @@ main {
 }
 
 /* =========================
-   CARD CONTAINER
+   CARD CONTAINER (MOBILE UX FIX)
    ========================= */
 #card-container {
   position: relative;
   width: 320px;
   height: 420px;
+  touch-action: none;            /* 🔥 disable browser gestures */
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 /* =========================
@@ -65,10 +71,7 @@ main {
    ========================= */
 .card {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  inset: 0;
   background: white;
   border-radius: 14px;
   overflow: hidden;
@@ -81,10 +84,11 @@ main {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  pointer-events: none;
   transition: opacity 0.3s ease;
 }
 
-/* Only top card can be interacted with */
+/* Only top card interactive */
 .card:last-child {
   pointer-events: auto;
   cursor: grab;
@@ -103,14 +107,13 @@ main {
   left: 16px;
   padding: 6px 12px;
   font-weight: bold;
-  border: 2px solid;
   border-radius: 6px;
   opacity: 0;
   pointer-events: none;
 }
 
 /* =========================
-   CONTROLS (PC)
+   CONTROLS (DESKTOP ONLY)
    ========================= */
 .controls {
   margin-top: 20px;
@@ -134,7 +137,7 @@ main {
   transform: scale(1.1);
 }
 
-/* Hide PC buttons on mobile */
+/* Hide buttons on mobile */
 @media (max-width: 600px) {
   .controls {
     display: none;
@@ -171,8 +174,8 @@ main {
   margin-top: 20px;
   padding: 10px 22px;
   font-size: 16px;
-  border: none;
   border-radius: 25px;
+  border: none;
   cursor: pointer;
   background: #333;
   color: white;

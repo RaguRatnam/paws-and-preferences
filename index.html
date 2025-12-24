@@ -2,7 +2,10 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, user-scalable=no"
+  />
   <title>Paws & Preferences 🐾</title>
   <link rel="stylesheet" href="style.css" />
 </head>
@@ -10,23 +13,23 @@
 
   <header>
     <h1>🐾 Paws & Preferences</h1>
-    <p>Swipe, click, or use arrow keys</p>
+    <p class="hint">Swipe on the card • Tap buttons on desktop</p>
   </header>
 
   <main>
     <!-- Progress Indicator -->
-    <div id="progress">1 / 10</div>
+    <div id="progress" aria-live="polite">1 / 10</div>
 
-    <!-- Swipe Cards -->
-    <div id="card-container"></div>
+    <!-- Swipe Cards (touch area) -->
+    <div id="card-container" aria-label="Swipe cards"></div>
 
-    <!-- PC Controls -->
-    <div class="controls">
+    <!-- Desktop Controls -->
+    <div class="controls" aria-hidden="true">
       <button id="dislike" aria-label="Dislike">❌</button>
       <button id="like" aria-label="Like">❤️</button>
     </div>
 
-    <!-- Restart Button -->
+    <!-- Restart -->
     <button id="restart" aria-label="Restart">🔄 Restart</button>
   </main>
 
