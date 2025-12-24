@@ -45,7 +45,7 @@ main {
   font-weight: 600;
 }
 
-/* CARD WRAPPER */
+/* CENTER CARD */
 .card-wrapper {
   flex: 1;
   display: flex;
@@ -95,7 +95,7 @@ main {
 .swipe-like { left: 20px; }
 .swipe-nope { right: 20px; }
 
-/* CONTROLS (DESKTOP ONLY) */
+/* CONTROLS (hidden by default) */
 .controls {
   display: none;
   gap: 30px;
@@ -113,8 +113,8 @@ main {
   box-shadow: 0 6px 15px rgba(0,0,0,0.25);
 }
 
-/* SHOW BUTTONS ON LAPTOP */
-@media (min-width: 768px) {
+/* SHOW CONTROLS ONLY ON MOUSE DEVICES */
+@media (hover: hover) and (pointer: fine) {
   .controls {
     display: flex;
   }

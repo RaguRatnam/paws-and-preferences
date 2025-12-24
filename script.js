@@ -4,10 +4,11 @@ const likeBtn = document.getElementById("like");
 const dislikeBtn = document.getElementById("dislike");
 
 const TOTAL = 10;
-const SWIPE_THRESHOLD = () => window.innerWidth * 0.25;
+const SWIPE_RATIO = 0.25;
 
 let cards = [];
 let liked = [];
+
 let startX = 0;
 let startY = 0;
 let currentX = 0;
@@ -87,8 +88,8 @@ container.addEventListener("touchmove", e => {
 
   const like = activeCard.querySelector(".swipe-like");
   const nope = activeCard.querySelector(".swipe-nope");
-
   const strength = Math.min(Math.abs(dx) / 120, 1);
+
   like.style.opacity = dx > 0 ? strength : 0;
   nope.style.opacity = dx < 0 ? strength : 0;
 
@@ -96,16 +97,16 @@ container.addEventListener("touchmove", e => {
     `translateX(${dx}px) rotate(${dx * 0.06}deg)`;
 }, { passive: false });
 
-/* TOUCH END (SAFE) */
+/* END SWIPE SAFELY */
 function endSwipe() {
   if (!dragging || !activeCard) return;
   dragging = false;
 
   const dx = currentX - startX;
-  const threshold = SWIPE_THRESHOLD();
+  const threshold = window.innerWidth * SWIPE_RATIO;
 
-  if (dx > threshold) completeSwipe(1);
-  else if (dx < -threshold) completeSwipe(-1);
+  if (dx > threshold) finishSwipe(1);
+  else if (dx < -threshold) finishSwipe(-1);
   else resetCard();
 }
 
@@ -120,8 +121,8 @@ function resetCard() {
   activeCard.querySelector(".swipe-nope").style.opacity = 0;
 }
 
-/* COMPLETE */
-function completeSwipe(dir) {
+/* COMPLETE SWIPE */
+function finishSwipe(dir) {
   if (dir === 1) liked.push(cards[cards.length - 1]);
 
   activeCard.style.transition = "transform 0.3s ease";
@@ -137,12 +138,18 @@ function completeSwipe(dir) {
 }
 
 /* DESKTOP BUTTONS */
-likeBtn.addEventListener("click", () => {
-  activeCard = topCard();
-  if (activeCard) completeSwipe(1);
-});
+if (likeBtn && dislikeBtn) {
+  likeBtn.addEventListener("click", () => {
+    const card = topCard();
+    if (!card) return;
+    activeCard = card;
+    finishSwipe(1);
+  });
 
-dislikeBtn.addEventListener("click", () => {
-  activeCard = topCard();
-  if (activeCard) completeSwipe(-1);
-});
+  dislikeBtn.addEventListener("click", () => {
+    const card = topCard();
+    if (!card) return;
+    activeCard = card;
+    finishSwipe(-1);
+  });
+}
