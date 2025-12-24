@@ -49,10 +49,12 @@ main {
 /* CARD CONTAINER */
 #card-container {
   position: relative;
-  width: 320px;
-  height: 420px;
+  width: min(92vw, 360px);
+  aspect-ratio: 3 / 4;
+  max-height: 65vh;
   touch-action: pan-y;
 }
+
 
 /* CARD */
 .card {
