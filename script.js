@@ -2,11 +2,14 @@ const container = document.getElementById("card-container");
 const progressEl = document.getElementById("progress");
 
 const TOTAL = 10;
+const SWIPE_THRESHOLD = () => window.innerWidth * 0.25;
 
 let cards = [];
 let liked = [];
+
 let startX = 0;
 let startY = 0;
+let currentX = 0;
 let dragging = false;
 let activeCard = null;
 let isSummary = false;
@@ -66,6 +69,7 @@ container.addEventListener("touchstart", e => {
   dragging = true;
   startX = e.touches[0].clientX;
   startY = e.touches[0].clientY;
+  currentX = startX;
 
   activeCard.style.transition = "none";
 }, { passive: true });
@@ -74,25 +78,24 @@ container.addEventListener("touchstart", e => {
 container.addEventListener("touchmove", e => {
   if (!dragging || !activeCard) return;
 
-  const dx = e.touches[0].clientX - startX;
-  const dy = e.touches[0].clientY - startY;
+  currentX = e.touches[0].clientX;
+  const currentY = e.touches[0].clientY;
 
-  // Allow vertical scroll
+  const dx = currentX - startX;
+  const dy = currentY - startY;
+
+  // Vertical gesture → allow scroll
   if (Math.abs(dy) > Math.abs(dx)) return;
 
   e.preventDefault();
 
   const likeEmoji = activeCard.querySelector(".swipe-like");
   const nopeEmoji = activeCard.querySelector(".swipe-nope");
+
   const strength = Math.min(Math.abs(dx) / 120, 1);
 
-  if (dx > 0) {
-    likeEmoji.style.opacity = strength;
-    nopeEmoji.style.opacity = 0;
-  } else {
-    nopeEmoji.style.opacity = strength;
-    likeEmoji.style.opacity = 0;
-  }
+  likeEmoji.style.opacity = dx > 0 ? strength : 0;
+  nopeEmoji.style.opacity = dx < 0 ? strength : 0;
 
   activeCard.style.transform =
     `translateX(${dx}px) rotate(${dx * 0.06}deg)`;
@@ -104,25 +107,23 @@ container.addEventListener("touchend", () => {
 
   dragging = false;
 
-  const dx = activeCard.getBoundingClientRect().left -
-             (window.innerWidth / 2);
-
-  const threshold = window.innerWidth * 0.25;
+  const dx = currentX - startX;
+  const threshold = SWIPE_THRESHOLD();
 
   if (dx > threshold) swipe(1);
   else if (dx < -threshold) swipe(-1);
   else resetCard();
 });
 
-/* RESET */
+/* RESET CARD */
 function resetCard() {
   activeCard.style.transition = "transform 0.25s ease";
-  activeCard.style.transform = "translateX(0)";
+  activeCard.style.transform = "translateX(0) rotate(0)";
   activeCard.querySelector(".swipe-like").style.opacity = 0;
   activeCard.querySelector(".swipe-nope").style.opacity = 0;
 }
 
-/* SWIPE */
+/* COMPLETE SWIPE */
 function swipe(dir) {
   if (dir === 1) liked.push(cards[cards.length - 1]);
 
