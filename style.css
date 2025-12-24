@@ -1,6 +1,4 @@
-/* =========================
-   GLOBAL RESET
-   ========================= */
+/* RESET */
 * {
   margin: 0;
   padding: 0;
@@ -8,18 +6,17 @@
   font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
-/* =========================
-   PAGE LAYOUT
-   ========================= */
+/* PAGE */
 body {
   background: #f7f7f7;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
-  overscroll-behavior: none; /* 🔥 prevent bounce */
+  overscroll-behavior-x: none;
 }
 
+/* HEADER */
 header {
   text-align: center;
   padding: 20px;
@@ -29,13 +26,12 @@ header h1 {
   font-size: 1.8rem;
 }
 
-header p,
 .hint {
-  color: #555;
-  margin-top: 4px;
   font-size: 0.9rem;
+  color: #666;
 }
 
+/* MAIN */
 main {
   flex: 1;
   width: 100%;
@@ -45,37 +41,29 @@ main {
   justify-content: center;
 }
 
-/* =========================
-   PROGRESS
-   ========================= */
+/* PROGRESS */
 #progress {
   margin-bottom: 10px;
   font-weight: 600;
-  color: #444;
 }
 
-/* =========================
-   CARD CONTAINER (MOBILE UX FIX)
-   ========================= */
+/* CARD CONTAINER */
 #card-container {
   position: relative;
   width: 320px;
   height: 420px;
-  touch-action: none;            /* 🔥 disable browser gestures */
-  -webkit-user-select: none;
+  touch-action: none;
   user-select: none;
 }
 
-/* =========================
-   CARD
-   ========================= */
+/* CARD */
 .card {
   position: absolute;
   inset: 0;
   background: white;
   border-radius: 14px;
   overflow: hidden;
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.18);
+  box-shadow: 0 12px 30px rgba(0,0,0,0.18);
   pointer-events: none;
   transition: transform 0.3s ease;
 }
@@ -85,10 +73,9 @@ main {
   height: 100%;
   object-fit: cover;
   pointer-events: none;
-  transition: opacity 0.3s ease;
 }
 
-/* Only top card interactive */
+/* TOP CARD */
 .card:last-child {
   pointer-events: auto;
   cursor: grab;
@@ -98,23 +85,7 @@ main {
   cursor: grabbing;
 }
 
-/* =========================
-   LIKE / NOPE BADGE
-   ========================= */
-.badge {
-  position: absolute;
-  top: 16px;
-  left: 16px;
-  padding: 6px 12px;
-  font-weight: bold;
-  border-radius: 6px;
-  opacity: 0;
-  pointer-events: none;
-}
-
-/* =========================
-   CONTROLS (DESKTOP ONLY)
-   ========================= */
+/* CONTROLS */
 .controls {
   margin-top: 20px;
   display: flex;
@@ -125,34 +96,23 @@ main {
   width: 60px;
   height: 60px;
   font-size: 24px;
-  border: none;
   border-radius: 50%;
+  border: none;
   cursor: pointer;
   background: white;
-  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
-  transition: transform 0.15s ease;
+  box-shadow: 0 6px 15px rgba(0,0,0,0.2);
 }
 
-.controls button:hover {
-  transform: scale(1.1);
-}
-
-/* Hide buttons on mobile */
+/* MOBILE */
 @media (max-width: 600px) {
   .controls {
     display: none;
   }
 }
 
-/* =========================
-   SUMMARY
-   ========================= */
+/* SUMMARY */
 .summary {
   text-align: center;
-}
-
-.summary h2 {
-  margin-bottom: 15px;
 }
 
 .liked-grid {
@@ -166,22 +126,14 @@ main {
   border-radius: 10px;
 }
 
-/* =========================
-   RESTART BUTTON
-   ========================= */
+/* RESTART */
 #restart {
   display: none;
   margin-top: 20px;
   padding: 10px 22px;
-  font-size: 16px;
   border-radius: 25px;
   border: none;
-  cursor: pointer;
   background: #333;
   color: white;
-  transition: background 0.2s ease;
-}
-
-#restart:hover {
-  background: #000;
+  cursor: pointer;
 }

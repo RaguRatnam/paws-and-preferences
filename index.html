@@ -13,24 +13,20 @@
 
   <header>
     <h1>🐾 Paws & Preferences</h1>
-    <p class="hint">Swipe on the card • Tap buttons on desktop</p>
+    <p class="hint">Swipe the card • Buttons on desktop</p>
   </header>
 
   <main>
-    <!-- Progress Indicator -->
-    <div id="progress" aria-live="polite">1 / 10</div>
+    <div id="progress">1 / 10</div>
 
-    <!-- Swipe Cards (touch area) -->
-    <div id="card-container" aria-label="Swipe cards"></div>
+    <div id="card-container"></div>
 
-    <!-- Desktop Controls -->
-    <div class="controls" aria-hidden="true">
+    <div class="controls">
       <button id="dislike" aria-label="Dislike">❌</button>
       <button id="like" aria-label="Like">❤️</button>
     </div>
 
-    <!-- Restart -->
-    <button id="restart" aria-label="Restart">🔄 Restart</button>
+    <button id="restart">🔄 Restart</button>
   </main>
 
   <script src="script.js"></script>
