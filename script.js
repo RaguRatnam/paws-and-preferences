@@ -1,15 +1,18 @@
 const container = document.getElementById("card-container");
 const progressEl = document.getElementById("progress");
+const likeBtn = document.getElementById("like");
+const dislikeBtn = document.getElementById("dislike");
 
 const TOTAL = 10;
+const SWIPE_THRESHOLD = () => window.innerWidth * 0.25;
 
 let cards = [];
 let liked = [];
 let startX = 0;
 let startY = 0;
+let currentX = 0;
 let dragging = false;
 let activeCard = null;
-let isSummary = false;
 
 /* INIT */
 init();
@@ -17,7 +20,6 @@ init();
 function init() {
   cards = [];
   liked = [];
-  isSummary = false;
 
   for (let i = 0; i < TOTAL; i++) {
     cards.push(`https://cataas.com/cat?random=${Date.now() + i}`);
@@ -58,14 +60,13 @@ function updateProgress() {
 
 /* TOUCH START */
 container.addEventListener("touchstart", e => {
-  if (isSummary) return;
-
   activeCard = topCard();
   if (!activeCard) return;
 
   dragging = true;
   startX = e.touches[0].clientX;
   startY = e.touches[0].clientY;
+  currentX = startX;
 
   activeCard.style.transition = "none";
 }, { passive: true });
@@ -74,56 +75,53 @@ container.addEventListener("touchstart", e => {
 container.addEventListener("touchmove", e => {
   if (!dragging || !activeCard) return;
 
-  const dx = e.touches[0].clientX - startX;
-  const dy = e.touches[0].clientY - startY;
+  const t = e.touches[0];
+  currentX = t.clientX;
 
-  // Allow vertical scroll
+  const dx = currentX - startX;
+  const dy = t.clientY - startY;
+
   if (Math.abs(dy) > Math.abs(dx)) return;
 
   e.preventDefault();
 
-  const likeEmoji = activeCard.querySelector(".swipe-like");
-  const nopeEmoji = activeCard.querySelector(".swipe-nope");
-  const strength = Math.min(Math.abs(dx) / 120, 1);
+  const like = activeCard.querySelector(".swipe-like");
+  const nope = activeCard.querySelector(".swipe-nope");
 
-  if (dx > 0) {
-    likeEmoji.style.opacity = strength;
-    nopeEmoji.style.opacity = 0;
-  } else {
-    nopeEmoji.style.opacity = strength;
-    likeEmoji.style.opacity = 0;
-  }
+  const strength = Math.min(Math.abs(dx) / 120, 1);
+  like.style.opacity = dx > 0 ? strength : 0;
+  nope.style.opacity = dx < 0 ? strength : 0;
 
   activeCard.style.transform =
     `translateX(${dx}px) rotate(${dx * 0.06}deg)`;
 }, { passive: false });
 
-/* TOUCH END */
-container.addEventListener("touchend", () => {
+/* TOUCH END (SAFE) */
+function endSwipe() {
   if (!dragging || !activeCard) return;
-
   dragging = false;
 
-  const dx = activeCard.getBoundingClientRect().left -
-             (window.innerWidth / 2);
+  const dx = currentX - startX;
+  const threshold = SWIPE_THRESHOLD();
 
-  const threshold = window.innerWidth * 0.25;
-
-  if (dx > threshold) swipe(1);
-  else if (dx < -threshold) swipe(-1);
+  if (dx > threshold) completeSwipe(1);
+  else if (dx < -threshold) completeSwipe(-1);
   else resetCard();
-});
+}
+
+document.addEventListener("touchend", endSwipe);
+document.addEventListener("touchcancel", endSwipe);
 
 /* RESET */
 function resetCard() {
   activeCard.style.transition = "transform 0.25s ease";
-  activeCard.style.transform = "translateX(0)";
+  activeCard.style.transform = "translateX(0) rotate(0)";
   activeCard.querySelector(".swipe-like").style.opacity = 0;
   activeCard.querySelector(".swipe-nope").style.opacity = 0;
 }
 
-/* SWIPE */
-function swipe(dir) {
+/* COMPLETE */
+function completeSwipe(dir) {
   if (dir === 1) liked.push(cards[cards.length - 1]);
 
   activeCard.style.transition = "transform 0.3s ease";
@@ -133,26 +131,18 @@ function swipe(dir) {
   setTimeout(() => {
     cards.pop();
     activeCard = null;
-
-    if (cards.length === 0) showSummary();
-    else {
-      render();
-      updateProgress();
-    }
+    render();
+    updateProgress();
   }, 300);
 }
 
-/* SUMMARY */
-function showSummary() {
-  isSummary = true;
+/* DESKTOP BUTTONS */
+likeBtn.addEventListener("click", () => {
+  activeCard = topCard();
+  if (activeCard) completeSwipe(1);
+});
 
-  container.innerHTML = `
-    <div class="summary">
-      <h2>😻 You liked ${liked.length} cats</h2>
-      <div class="liked-grid">
-        ${liked.map(src => `<img src="${src}">`).join("")}
-      </div>
-      <button class="restart-btn" onclick="init()">Restart</button>
-    </div>
-  `;
-}
+dislikeBtn.addEventListener("click", () => {
+  activeCard = topCard();
+  if (activeCard) completeSwipe(-1);
+});

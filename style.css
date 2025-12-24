@@ -3,7 +3,7 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: system-ui, -apple-system, sans-serif;
 }
 
 /* PAGE */
@@ -18,15 +18,15 @@ body {
 /* HEADER */
 header {
   text-align: center;
-  padding: 20px;
+  padding: 18px 12px 10px;
 }
 
 header h1 {
-  font-size: 1.8rem;
+  font-size: 1.6rem;
 }
 
 .hint {
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   color: #666;
 }
 
@@ -37,13 +37,21 @@ main {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding-bottom: 40px;
 }
 
 /* PROGRESS */
 #progress {
-  margin-bottom: 10px;
+  margin: 8px 0 14px;
   font-weight: 600;
+}
+
+/* CARD WRAPPER */
+.card-wrapper {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
 }
 
 /* CARD CONTAINER */
@@ -55,83 +63,68 @@ main {
   touch-action: pan-y;
 }
 
-
 /* CARD */
 .card {
   position: absolute;
   inset: 0;
   background: white;
-  border-radius: 14px;
+  border-radius: 18px;
   overflow: hidden;
-  box-shadow: 0 12px 30px rgba(0,0,0,0.18);
+  box-shadow: 0 14px 30px rgba(0,0,0,0.18);
+  will-change: transform;
 }
 
+/* IMAGE */
 .card img {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
-/* CONTROLS */
+/* SWIPE EMOJIS */
+.swipe-emoji {
+  position: absolute;
+  top: 22px;
+  font-size: 64px;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 10;
+  text-shadow: 0 4px 10px rgba(0,0,0,0.35);
+}
+
+.swipe-like { left: 20px; }
+.swipe-nope { right: 20px; }
+
+/* CONTROLS (DESKTOP ONLY) */
 .controls {
-  margin-top: 20px;
-  display: flex;
+  display: none;
   gap: 30px;
+  margin: 20px 0 30px;
 }
 
 .controls button {
-  width: 60px;
-  height: 60px;
-  font-size: 24px;
+  width: 64px;
+  height: 64px;
+  font-size: 26px;
   border-radius: 50%;
   border: none;
   cursor: pointer;
   background: white;
-  box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+  box-shadow: 0 6px 15px rgba(0,0,0,0.25);
 }
 
-@media (max-width: 600px) {
+/* SHOW BUTTONS ON LAPTOP */
+@media (min-width: 768px) {
   .controls {
-    display: none;
+    display: flex;
   }
-}
 
-/* SUMMARY */
-.summary {
-  position: absolute;
-  inset: 0;
-  padding: 20px 16px 40px;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  touch-action: pan-y;
-  text-align: center;
-}
+  #card-container {
+    width: 420px;
+    max-height: 70vh;
+  }
 
-.summary h2 {
-  margin-bottom: 15px;
-}
-
-.liked-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 10px;
-}
-
-.liked-grid img {
-  width: 100%;
-  border-radius: 10px;
-  touch-action: pan-y;
-}
-
-/* RESTART */
-.restart-btn {
-  margin-top: 30px;
-  width: 100%;
-  padding: 14px;
-  font-size: 16px;
-  font-weight: 600;
-  border-radius: 14px;
-  border: none;
-  background: #111;
-  color: white;
+  .swipe-emoji {
+    font-size: 72px;
+  }
 }
