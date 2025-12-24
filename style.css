@@ -53,7 +53,6 @@ main {
   position: relative;
   width: 320px;
   height: 420px;
-  touch-action: none;
   user-select: none;
 }
 

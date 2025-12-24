@@ -23,6 +23,9 @@ function init() {
 
   document.body.style.overflow = "";
 
+  container.style.touchAction = "none";
+
+
   for (let i = 0; i < TOTAL; i++) {
     cards.push(`https://cataas.com/cat?random=${Date.now() + i}`);
   }
@@ -148,6 +151,8 @@ function swipe(dir) {
 function showSummary() {
   isSummary = true;
   document.body.style.overflowY = "auto";
+  container.style.touchAction = "auto";
+
 
   container.innerHTML = `
     <div class="summary">
