@@ -100,12 +100,23 @@ function end() {
   const dx = currentX - startX;
   const threshold = window.innerWidth * 0.25;
 
-  activeCard.style.transition = "transform 0.3s ease";
+  if (dx > threshold) {
+    swipe(1);
+    return;
+  }
 
-  if (dx > threshold) swipe(1);
-  else if (dx < -threshold) swipe(-1);
-  else activeCard.style.transform = "translateX(0)";
+  if (dx < -threshold) {
+    swipe(-1);
+    return;
+  }
+
+  // 🔥 SMOOTH SNAP-BACK
+  requestAnimationFrame(() => {
+    activeCard.style.transition = "transform 0.25s cubic-bezier(0.22, 1, 0.36, 1)";
+    activeCard.style.transform = "translateX(0) rotate(0)";
+  });
 }
+
 
 /* SWIPE */
 function swipe(dir) {
