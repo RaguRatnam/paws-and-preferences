@@ -195,14 +195,19 @@ function showSummary() {
   container.innerHTML = `
     <div class="summary">
       <h2>😻 You liked ${liked.length} cats!</h2>
+
       <div class="liked-grid">
         ${liked.map(src => `<img src="${src}">`).join("")}
       </div>
+
+      <button id="restart" class="restart-btn">🔄 Restart</button>
     </div>
   `;
 
-  restartBtn.style.display = "block";
+  // Re-bind restart click
+  document.getElementById("restart").onclick = init;
 }
+
 
 
 
