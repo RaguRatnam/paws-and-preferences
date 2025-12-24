@@ -38,9 +38,10 @@ function render() {
 
     card.innerHTML = `
       <img src="${src}">
-      <div class="indicator like">LIKE</div>
-      <div class="indicator nope">NOPE</div>
+      <div class="swipe-emoji swipe-like">❤️</div>
+      <div class="swipe-emoji swipe-nope">❌</div>
     `;
+
 
     container.appendChild(card);
   });
@@ -72,38 +73,33 @@ container.addEventListener("touchstart", e => {
 
 /* TOUCH MOVE */
 container.addEventListener("touchmove", e => {
-  if (!dragging || !activeCard) return;
+  if (!dragging || !activeCard || isSummary) return;
 
   const dx = e.touches[0].clientX - startX;
   const dy = e.touches[0].clientY - startY;
 
+  // Allow vertical scroll
   if (Math.abs(dy) > Math.abs(dx)) return;
 
   e.preventDefault();
 
-  const likeEl = activeCard.querySelector(".like");
-  const nopeEl = activeCard.querySelector(".nope");
+  const likeEmoji = activeCard.querySelector(".swipe-like");
+  const nopeEmoji = activeCard.querySelector(".swipe-nope");
 
-  likeEl.style.opacity = dx > 0 ? Math.min(dx / 100, 1) : 0;
-  nopeEl.style.opacity = dx < 0 ? Math.min(-dx / 100, 1) : 0;
+  const strength = Math.min(Math.abs(dx) / 120, 1);
+
+  if (dx > 0) {
+    likeEmoji.style.opacity = strength;
+    nopeEmoji.style.opacity = 0;
+  } else {
+    nopeEmoji.style.opacity = strength;
+    likeEmoji.style.opacity = 0;
+  }
 
   activeCard.style.transform =
-    `translateX(${dx}px) rotate(${dx * 0.07}deg)`;
+    `translateX(${dx}px) rotate(${dx * 0.06}deg)`;
 }, { passive: false });
 
-/* TOUCH END */
-container.addEventListener("touchend", () => {
-  if (!dragging || !activeCard) return;
-
-  dragging = false;
-  const dx = activeCard.getBoundingClientRect().left - (window.innerWidth / 2);
-
-  const threshold = window.innerWidth * 0.25;
-
-  if (dx > threshold) swipe(1);
-  else if (dx < -threshold) swipe(-1);
-  else resetCard();
-});
 
 /* RESET */
 function resetCard() {
@@ -111,6 +107,8 @@ function resetCard() {
   activeCard.style.transform = "translateX(0)";
   activeCard.querySelector(".like").style.opacity = 0;
   activeCard.querySelector(".nope").style.opacity = 0;
+  activeCard.querySelector(".swipe-like").style.opacity = 0;
+  activeCard.querySelector(".swipe-nope").style.opacity = 0;
 }
 
 /* SWIPE */

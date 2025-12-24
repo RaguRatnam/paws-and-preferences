@@ -129,3 +129,20 @@ main {
   color: white;
   font-size: 16px;
 }
+/* SWIPE EMOJI INDICATORS */
+.swipe-emoji {
+  position: absolute;
+  top: 24px;
+  font-size: 64px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.1s linear;
+}
+
+.swipe-like {
+  left: 20px;
+}
+
+.swipe-nope {
+  right: 20px;
+}
