@@ -5,7 +5,6 @@ const container = document.getElementById("card-container");
 const likeBtn = document.getElementById("like");
 const dislikeBtn = document.getElementById("dislike");
 const progressEl = document.getElementById("progress");
-const restartBtn = document.getElementById("restart");
 
 /* =========================
    CONFIG
@@ -41,8 +40,6 @@ function init() {
     cards.push(`https://cataas.com/cat?random=${Date.now() + i}`);
   }
 
-  restartBtn.style.opacity = "0";
-  restartBtn.style.display = "none";
 
   render();
   updateProgress();
@@ -189,7 +186,6 @@ function swipe(direction) {
    ========================= */
 function showSummary() {
   isSummary = true;
-
   document.body.style.overflowY = "auto";
 
   container.innerHTML = `
@@ -200,15 +196,13 @@ function showSummary() {
         ${liked.map(src => `<img src="${src}">`).join("")}
       </div>
 
-      <button id="restart" class="restart-btn">🔄 Restart</button>
+      <button class="restart-btn" id="restart">🔄 Restart</button>
     </div>
   `;
 
-  // Re-bind restart click
-  document.getElementById("restart").onclick = init;
+  // Bind restart AFTER it exists
+  document.getElementById("restart").addEventListener("click", init);
 }
-
-
 
 
 /* =========================
@@ -227,4 +221,3 @@ document.addEventListener("mouseup", end);
    ========================= */
 likeBtn.onclick = () => swipe(1);
 dislikeBtn.onclick = () => swipe(-1);
-restartBtn.onclick = init;
