@@ -2,14 +2,11 @@ const container = document.getElementById("card-container");
 const progressEl = document.getElementById("progress");
 
 const TOTAL = 10;
-const SWIPE_RATIO = 0.25;
 
 let cards = [];
 let liked = [];
-
 let startX = 0;
 let startY = 0;
-let currentX = 0;
 let dragging = false;
 let activeCard = null;
 let isSummary = false;
@@ -59,73 +56,74 @@ function updateProgress() {
   progressEl.textContent = `${Math.min(viewed, TOTAL)} / ${TOTAL}`;
 }
 
-/* START */
-function onStart(e) {
+/* TOUCH START */
+container.addEventListener("touchstart", e => {
   if (isSummary) return;
 
   activeCard = topCard();
   if (!activeCard) return;
 
   dragging = true;
-
-  const t = e.touches[0];
-  startX = t.clientX;
-  startY = t.clientY;
-  currentX = startX;
+  startX = e.touches[0].clientX;
+  startY = e.touches[0].clientY;
 
   activeCard.style.transition = "none";
-}
+}, { passive: true });
 
-/* MOVE */
-function onMove(e) {
+/* TOUCH MOVE */
+container.addEventListener("touchmove", e => {
   if (!dragging || !activeCard) return;
 
-  const t = e.touches[0];
-  currentX = t.clientX;
+  const dx = e.touches[0].clientX - startX;
+  const dy = e.touches[0].clientY - startY;
 
-  const dx = currentX - startX;
-  const dy = t.clientY - startY;
-
-  // Vertical gesture → allow scroll
+  // Allow vertical scroll
   if (Math.abs(dy) > Math.abs(dx)) return;
 
   e.preventDefault();
 
-  const like = activeCard.querySelector(".swipe-like");
-  const nope = activeCard.querySelector(".swipe-nope");
-
+  const likeEmoji = activeCard.querySelector(".swipe-like");
+  const nopeEmoji = activeCard.querySelector(".swipe-nope");
   const strength = Math.min(Math.abs(dx) / 120, 1);
-  like.style.opacity = dx > 0 ? strength : 0;
-  nope.style.opacity = dx < 0 ? strength : 0;
+
+  if (dx > 0) {
+    likeEmoji.style.opacity = strength;
+    nopeEmoji.style.opacity = 0;
+  } else {
+    nopeEmoji.style.opacity = strength;
+    likeEmoji.style.opacity = 0;
+  }
 
   activeCard.style.transform =
     `translateX(${dx}px) rotate(${dx * 0.06}deg)`;
-}
+}, { passive: false });
 
-/* END (SAFE) */
-function onEnd() {
+/* TOUCH END */
+container.addEventListener("touchend", () => {
   if (!dragging || !activeCard) return;
 
   dragging = false;
 
-  const dx = currentX - startX;
-  const threshold = window.innerWidth * SWIPE_RATIO;
+  const dx = activeCard.getBoundingClientRect().left -
+             (window.innerWidth / 2);
 
-  if (dx > threshold) finishSwipe(1);
-  else if (dx < -threshold) finishSwipe(-1);
+  const threshold = window.innerWidth * 0.25;
+
+  if (dx > threshold) swipe(1);
+  else if (dx < -threshold) swipe(-1);
   else resetCard();
-}
+});
 
 /* RESET */
 function resetCard() {
   activeCard.style.transition = "transform 0.25s ease";
-  activeCard.style.transform = "translateX(0) rotate(0)";
+  activeCard.style.transform = "translateX(0)";
   activeCard.querySelector(".swipe-like").style.opacity = 0;
   activeCard.querySelector(".swipe-nope").style.opacity = 0;
 }
 
-/* COMPLETE */
-function finishSwipe(dir) {
+/* SWIPE */
+function swipe(dir) {
   if (dir === 1) liked.push(cards[cards.length - 1]);
 
   activeCard.style.transition = "transform 0.3s ease";
@@ -158,9 +156,3 @@ function showSummary() {
     </div>
   `;
 }
-
-/* EVENTS */
-container.addEventListener("touchstart", onStart, { passive: true });
-container.addEventListener("touchmove", onMove, { passive: false });
-document.addEventListener("touchend", onEnd);
-document.addEventListener("touchcancel", onEnd);
