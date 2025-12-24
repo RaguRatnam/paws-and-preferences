@@ -14,6 +14,7 @@ let startY = 0;
 let currentX = 0;
 let dragging = false;
 let activeCard = null;
+let isSummary = false;
 
 /* INIT */
 init();
@@ -21,6 +22,7 @@ init();
 function init() {
   cards = [];
   liked = [];
+  isSummary = false;
 
   for (let i = 0; i < TOTAL; i++) {
     cards.push(`https://cataas.com/cat?random=${Date.now() + i}`);
@@ -61,6 +63,8 @@ function updateProgress() {
 
 /* TOUCH START */
 container.addEventListener("touchstart", e => {
+  if (isSummary) return;
+
   activeCard = topCard();
   if (!activeCard) return;
 
@@ -74,7 +78,7 @@ container.addEventListener("touchstart", e => {
 
 /* TOUCH MOVE */
 container.addEventListener("touchmove", e => {
-  if (!dragging || !activeCard) return;
+  if (!dragging || !activeCard || isSummary) return;
 
   const t = e.touches[0];
   currentX = t.clientX;
@@ -97,9 +101,9 @@ container.addEventListener("touchmove", e => {
     `translateX(${dx}px) rotate(${dx * 0.06}deg)`;
 }, { passive: false });
 
-/* END SWIPE SAFELY */
+/* END SWIPE (SAFE) */
 function endSwipe() {
-  if (!dragging || !activeCard) return;
+  if (!dragging || !activeCard || isSummary) return;
   dragging = false;
 
   const dx = currentX - startX;
@@ -113,7 +117,7 @@ function endSwipe() {
 document.addEventListener("touchend", endSwipe);
 document.addEventListener("touchcancel", endSwipe);
 
-/* RESET */
+/* RESET CARD */
 function resetCard() {
   activeCard.style.transition = "transform 0.25s ease";
   activeCard.style.transform = "translateX(0) rotate(0)";
@@ -132,14 +136,39 @@ function finishSwipe(dir) {
   setTimeout(() => {
     cards.pop();
     activeCard = null;
-    render();
-    updateProgress();
+
+    if (cards.length === 0) {
+      showSummary();
+    } else {
+      render();
+      updateProgress();
+    }
   }, 300);
+}
+
+/* SUMMARY PAGE */
+function showSummary() {
+  isSummary = true;
+
+  progressEl.textContent = `Done`;
+
+  container.innerHTML = `
+    <div class="summary">
+      <h2>😻 You liked ${liked.length} cats</h2>
+      <div class="liked-grid">
+        ${liked.map(src => `<img src="${src}">`).join("")}
+      </div>
+      <button class="restart-btn" id="restart">🔄 Restart</button>
+    </div>
+  `;
+
+  document.getElementById("restart").addEventListener("click", init);
 }
 
 /* DESKTOP BUTTONS */
 if (likeBtn && dislikeBtn) {
   likeBtn.addEventListener("click", () => {
+    if (isSummary) return;
     const card = topCard();
     if (!card) return;
     activeCard = card;
@@ -147,6 +176,7 @@ if (likeBtn && dislikeBtn) {
   });
 
   dislikeBtn.addEventListener("click", () => {
+    if (isSummary) return;
     const card = topCard();
     if (!card) return;
     activeCard = card;
