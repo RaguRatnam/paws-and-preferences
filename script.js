@@ -1,32 +1,19 @@
-/* =========================
-   ELEMENTS
-   ========================= */
 const container = document.getElementById("card-container");
 const likeBtn = document.getElementById("like");
 const dislikeBtn = document.getElementById("dislike");
 const progressEl = document.getElementById("progress");
 
-/* =========================
-   CONFIG
-   ========================= */
 const TOTAL = 10;
 
-/* =========================
-   STATE
-   ========================= */
 let cards = [];
 let liked = [];
-
 let startX = 0;
 let currentX = 0;
 let dragging = false;
 let activeCard = null;
 let isSummary = false;
 
-
-/* =========================
-   INIT
-   ========================= */
+/* INIT */
 init();
 
 function init() {
@@ -34,21 +21,17 @@ function init() {
   liked = [];
   isSummary = false;
 
-  document.body.style.overflow = ""; // 🔓 allow normal scroll reset
+  document.body.style.overflow = "";
 
   for (let i = 0; i < TOTAL; i++) {
     cards.push(`https://cataas.com/cat?random=${Date.now() + i}`);
   }
 
-
   render();
   updateProgress();
 }
 
-
-/* =========================
-   RENDER
-   ========================= */
+/* RENDER */
 function render() {
   container.innerHTML = "";
 
@@ -65,16 +48,13 @@ function render() {
 
     const img = document.createElement("img");
     img.src = src;
-    img.alt = "Cat";
 
     card.appendChild(img);
     container.appendChild(card);
   });
 }
 
-/* =========================
-   HELPERS
-   ========================= */
+/* HELPERS */
 function topCard() {
   return container.lastElementChild;
 }
@@ -84,11 +64,9 @@ function updateProgress() {
   progressEl.textContent = `${Math.min(viewed, TOTAL)} / ${TOTAL}`;
 }
 
-/* =========================
-   DRAG START
-   ========================= */
+/* START */
 function start(e) {
-  if (isSummary) return; // 🔥 disable swipe on summary
+  if (isSummary) return;
 
   const target = e.target.closest(".card");
   if (!target || target !== topCard()) return;
@@ -105,13 +83,9 @@ function start(e) {
   activeCard.style.transition = "none";
 }
 
-
-/* =========================
-   DRAG MOVE
-   ========================= */
+/* MOVE */
 function move(e) {
   if (!dragging || !activeCard) return;
-
   e.preventDefault();
 
   currentX = e.type === "mousemove"
@@ -119,14 +93,11 @@ function move(e) {
     : e.touches[0].clientX;
 
   const dx = currentX - startX;
-
   activeCard.style.transform =
     `translateX(${dx}px) rotate(${dx * 0.07}deg)`;
 }
 
-/* =========================
-   DRAG END
-   ========================= */
+/* END */
 function end() {
   if (!dragging || !activeCard) return;
 
@@ -146,7 +117,6 @@ function end() {
     return;
   }
 
-  // Smooth snap-back
   requestAnimationFrame(() => {
     activeCard.style.transition =
       "transform 0.25s cubic-bezier(0.22, 1, 0.36, 1)";
@@ -154,36 +124,27 @@ function end() {
   });
 }
 
-/* =========================
-   SWIPE
-   ========================= */
-function swipe(direction) {
-  if (!activeCard) return;
-
-  if (direction === 1) {
-    liked.push(cards[cards.length - 1]);
-  }
+/* SWIPE */
+function swipe(dir) {
+  if (dir === 1) liked.push(cards[cards.length - 1]);
 
   activeCard.style.transition = "transform 0.3s ease";
   activeCard.style.transform =
-    `translateX(${direction * window.innerWidth}px) rotate(${direction * 25}deg)`;
+    `translateX(${dir * window.innerWidth}px) rotate(${dir * 25}deg)`;
 
   setTimeout(() => {
     cards.pop();
     activeCard = null;
 
-    if (cards.length === 0) {
-      showSummary();
-    } else {
+    if (cards.length === 0) showSummary();
+    else {
       render();
       updateProgress();
     }
   }, 300);
 }
 
-/* =========================
-   SUMMARY
-   ========================= */
+/* SUMMARY */
 function showSummary() {
   isSummary = true;
   document.body.style.overflowY = "auto";
@@ -200,14 +161,10 @@ function showSummary() {
     </div>
   `;
 
-  // Bind restart AFTER it exists
-  document.getElementById("restart").addEventListener("click", init);
+  document.getElementById("restart").onclick = init;
 }
 
-
-/* =========================
-   EVENTS
-   ========================= */
+/* EVENTS */
 container.addEventListener("touchstart", start, { passive: false });
 container.addEventListener("touchmove", move, { passive: false });
 container.addEventListener("touchend", end);
@@ -216,8 +173,6 @@ document.addEventListener("mousedown", start);
 document.addEventListener("mousemove", move);
 document.addEventListener("mouseup", end);
 
-/* =========================
-   CONTROLS
-   ========================= */
+/* BUTTONS */
 likeBtn.onclick = () => swipe(1);
 dislikeBtn.onclick = () => swipe(-1);
