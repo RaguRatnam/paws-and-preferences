@@ -190,7 +190,7 @@ function swipe(direction) {
 function showSummary() {
   isSummary = true;
 
-  document.body.style.overflowY = "auto"; // 🔓 enable scrolling
+  document.body.style.overflowY = "auto";
 
   container.innerHTML = `
     <div class="summary">
@@ -202,10 +202,8 @@ function showSummary() {
   `;
 
   restartBtn.style.display = "block";
-  requestAnimationFrame(() => {
-    restartBtn.style.opacity = "1";
-  });
 }
+
 
 
 /* =========================
